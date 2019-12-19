@@ -60,12 +60,12 @@ io.on('connection', function (socket) {
       });
 
       try {
-        Place.updateOne({ _id: addData.selectedPlace }, place, () => {
+        await Place.updateOne({ _id: addData.selectedPlace }, place, () => {
           io.emit('selected place', addData.selectedPlace)
           console.log({ message: "+++UPDATE COMPLETE worked!!" })
         })
-      } catch {
-        console.log("---UPDATE failed!! ")
+      } catch (err) {
+        console.log("---UPDATE failed!! " + err)
       }
     }
   })
