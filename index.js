@@ -7,8 +7,8 @@ const app = express();
 const Place = require('./models/palaces')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-
-mongoose.connect('mongodb://localhost:27017/usersdb')
+require('dotenv').config();
+mongoose.connect(process.env.mongo)
 
 var db = mongoose.connection
 db.on('error', () => { console.log('---Gethyl FAILED to connect to mongoose') })
@@ -58,27 +58,15 @@ io.on('connection', function (socket) {
         userEmail: addData.email,
         status: 'false'
       });
-      Place.updateOne({ _id: addData.selectedPlace }, place, (err, result) => {
-        if (err) { console.log("---UPDATE failed!! " + err) }
-        else {
+
+      try {
+        Place.updateOne({ _id: addData.selectedPlace }, place, () => {
           io.emit('selected place', addData.selectedPlace)
           console.log({ message: "+++UPDATE COMPLETE worked!!" })
-        }
-      })
+        })
+      } catch {
+        console.log("---UPDATE failed!! ")
+      }
     }
   })
 });
-
-
-
-// const place = new Place({
-
-//   status: 'true'
-// });
-// Place.updateMany({ status: 'false' }, place, (err, result) => {
-//   if (err) { console.log("---UPDATE failed!! " + err) }
-//   else {
-//     console.log({ message: "+++UPDATE COMPLETE worked!!" })
-//   }
-// }
-// )
